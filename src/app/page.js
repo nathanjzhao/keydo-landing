@@ -1,3 +1,4 @@
+"use client"
 import Image from "next/image";
 import {
   Accordion,
@@ -14,12 +15,34 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel"
 
+import React, { useRef, useState, useEffect } from 'react';
+
 
 
 export default function Home() {
+  const videoRef = useRef();
+  const [showVideo, setShowVideo] = useState(false);
+
+  const handlePlayVideo = () => {
+    setShowVideo(true);
+  };
+  useEffect(() => {
+    if (showVideo && videoRef.current) {
+      videoRef.current.play();
+    }
+  }, [showVideo]);
   return (
-    <main className="overflow-auto min-h-screen">
-      <div className="flex flex-col items-center justify-center min-h-screen mt-[30vh] w-[30vw]">
+    <main className="overflow-auto min-h-screen justify-center">
+      <div className="flex flex-col mx-auto min-h-screen mt-[30vh] w-[50vw]">
+        <div className="items-center justify-center w-full h-full">
+          {showVideo && (
+            <video ref={videoRef} width="full" height="full">
+              <source src="car.mp4" type="video/mp4" />
+              Your browser does not support the video tag.
+            </video>
+          )}
+        </div>
+        <button onClick={handlePlayVideo}>Play Video</button>
         <Carousel>
           <CarouselContent>
             <CarouselItem>
@@ -41,10 +64,10 @@ export default function Home() {
             </div>
           </CarouselItem>
         </CarouselContent>
-    <CarouselPrevious />
-    <CarouselNext />
-  </Carousel>
-        <div className="flex flex-col items-center justify-center h-[50vh] w-[70vw] mt-auto">
+        <CarouselPrevious />
+        <CarouselNext />
+      </Carousel>
+        <div className="flex flex-col items-center justify-center h-[50vh] w-full mt-auto">
           <div className="text-left mb-4">
             <strong>FAQ</strong>
           </div>

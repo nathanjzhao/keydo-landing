@@ -22,27 +22,47 @@ import React, { useRef, useState, useEffect } from 'react';
 export default function Home() {
   const videoRef = useRef();
   const [showVideo, setShowVideo] = useState(false);
-
+  const [videoSize, setVideoSize] = useState({ width: '0%', height: '0%' });
   const handlePlayVideo = () => {
     setShowVideo(true);
+    setTimeout(() => setVideoSize({ width: '90%', height: '90%' }), 10);
   };
+
+  const handleVideoEnd = () => {
+    setShowVideo(false);
+    setVideoSize({ width: '0%', height: '0%' });
+  };
+
   useEffect(() => {
     if (showVideo && videoRef.current) {
       videoRef.current.play();
+      videoRef.current.addEventListener('ended', handleVideoEnd);
+    }
+    return () => {
+      if (videoRef.current) {
+        videoRef.current.removeEventListener('ended', handleVideoEnd);
+      }
     }
   }, [showVideo]);
   return (
-    <main className="overflow-auto min-h-screen justify-center">
+  <main className="overflow-auto min-h-screen justify-center">
+    <div className={`fixed top-0 left-0 min-w-full min-h-full object-cover flex items-center justify-center ${showVideo ? 'z-10' : 'z-0 pointer-events-none'}`}>
+      {showVideo && (
+        <video 
+          ref={videoRef}
+          className="rounded transition-all duration-700 ease-in-out"
+          style={{ width: videoSize.width, height: videoSize.height }}
+          controls // Assuming you want controls, remove if not needed
+        >
+          <source src="car.mp4" type="video/mp4" />
+          Your browser does not support the video tag.
+        </video>
+      )}
+    </div>
+    <div className="flex flex-col items-center justify-center h-[50vh] w-full mt-auto z-10">
+      <button onClick={handlePlayVideo}>Play Video</button>
+    </div>
       <div className="flex flex-col mx-auto min-h-screen mt-[30vh] w-[50vw]">
-        <div className="items-center justify-center w-full h-full">
-          {showVideo && (
-            <video ref={videoRef} width="full" height="full">
-              <source src="car.mp4" type="video/mp4" />
-              Your browser does not support the video tag.
-            </video>
-          )}
-        </div>
-        <button onClick={handlePlayVideo}>Play Video</button>
         <Carousel>
           <CarouselContent>
             <CarouselItem>
